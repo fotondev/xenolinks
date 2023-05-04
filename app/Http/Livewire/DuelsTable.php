@@ -6,6 +6,7 @@ use App\Models\Duel;
 use App\Models\Event;
 use App\Models\Round;
 use Livewire\Component;
+use Illuminate\Support\Facades\Session;
 
 class DuelsTable extends Component
 {
@@ -72,20 +73,50 @@ class DuelsTable extends Component
             $this->currentMatches->push($duel);
         }
         $this->currentRound = $round;
-        
-    
+
+
         $this->event->refresh();
     }
 
-    public function finishRound()
+
+    public function checkDuelsScore($matches)
     {
-       
-        $this->currentRound->is_finished = 1;
-        dd($this->currentRound);
-        foreach ($this->currentMatches as $match) {
-            foreach ($match->participants as $key => $participant) {
-                echo $participant->name;
+        foreach ($matches as $match) {
+            if (empty($match['p1_score']) || empty($match['p2_score'])) {
+                return false;
             }
         }
+        return true;
+    }
+
+
+
+    public function finishRound()
+    {
+        if ($this->checkDuelsScore($this->currentMatches)) {
+            foreach ($this->currentMatches as $match) {
+                $this->currentRound->is_finished = 1;
+                $this->currentRound->save();
+                foreach ($match->participants as $key => $participant) {
+                    if ($key == 0) {
+                        $participant->current_score += $match->p1_score;
+                        $participant->save();
+                    } else {
+                        $participant->current_score += $match->p2_score;
+                        $participant->save();
+                    }
+                }
+            }
+        } else {
+            Session::flash('message', 'Все дуэли должны иметь счет!');
+        }
+    }
+
+
+
+    public function showPreviousRound()
+    {
+       $roundNumber = $this->currentRound['number'] - 1;
+       
     }
 }

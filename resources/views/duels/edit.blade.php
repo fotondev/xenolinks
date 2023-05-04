@@ -3,12 +3,11 @@
     @csrf
     @method('PUT')
     <div>
-        <x-input id="p1_score" name="p1_score" type="number" value="{{old('p1_score')}}"></x-input>
+        <x-input id="p1_score" name="p1_score" type="number" value="{{old('p1_score', $duel->p1_score)}}"></x-input>
         <label for="p1_score">Участник 1 очки:</label>
-        <div>счет:{{$duel->p1_score}}</div>
     </div>
     <div>
-        <x-input id="p2_score" name="p2_score" type="number" value="{{old('p2_score')}}"></x-input>
+        <x-input id="p2_score" name="p2_score" type="number" value="{{old('p2_score', $duel->p2_score)}}"></x-input>
         <label for="p2_score">Участник 2 очки:</label>
     </div>
     <x-button type="submit">Подтвердить</x-button>

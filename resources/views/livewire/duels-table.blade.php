@@ -9,9 +9,9 @@
                 </h2>
             </x-slot>
         </div>
-
+        <x-alert />
         <div>
-
+            <x-button  wire:click="showPreviousRound">Показать предыдущий</x-button>
             <div>
                 @if ($currentRound)
                     <div>Раунд {{ $currentRound->number }}</div>
@@ -47,3 +47,4 @@
         </div>
     </div>
 </div>
+
