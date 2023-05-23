@@ -11,18 +11,20 @@
         </div>
 
         <div>
-            <a href="{{ route('participant.create', $event->id) }}">
-                <x-button>Добавить</x-button>
-            </a>
+            @if ($event->size > count($event->participants) && $event->status->value != 'finished')
+                <a href="{{ route('participant.create', $event->id) }}">
+                    <x-button>Добавить</x-button>
+                </a>
+            @endif
             @livewire('participants-count', [
                 'event' => $event,
                 'checked' => $checked,
             ])
         </div>
-        <div>
+        <div>  
             @livewire('participants-table', [
-                'event' => $event,
-            ])
+                    'event' => $event,
+                ])
         </div>
     </div>
 </x-app-layout>

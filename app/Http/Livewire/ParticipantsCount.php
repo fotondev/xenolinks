@@ -11,7 +11,10 @@ class ParticipantsCount extends Component
     public Event $event;
     public $checked=[];
 
-    public $listeners = ['statusChanged' => 'changeCount'];
+    public $listeners = [
+        'statusChanged' => 'changeCount',
+        'participantDelete' => 'changeCount'
+    ];
 
     public function changeCount(): void
     {

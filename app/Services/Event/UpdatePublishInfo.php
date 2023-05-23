@@ -13,8 +13,8 @@ class UpdatePublishInfo extends BaseService
     {
         return  [
             'id' => 'required',
-            'start_date' => 'required|date|after:now',
-            'end_date' => 'required|date|after:start_date',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|',
         ];
     }
 
@@ -22,6 +22,7 @@ class UpdatePublishInfo extends BaseService
     public function execute(array $data): void
     {
         $this->validate($data);
+        dd($data);
         $event = Event::findOrFail($data['id']);
         $event->update($data);
     }

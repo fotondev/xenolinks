@@ -14,14 +14,7 @@
             Участники
         </h2>
     </x-card-link>
-    <x-card-link>
-        <h2>
-            Управление правами
-        </h2>
-    </x-card-link>
-    <x-card-link>
-        <h2>
-            Глобальные операции
-        </h2>
-    </x-card-link>
+    <div class="mt-8">
+         <x-button class="bg-red-500" wire:click="deleteEvent">Удалить событие</x-button>
+    </div>
 </div>

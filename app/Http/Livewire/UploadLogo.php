@@ -3,12 +3,12 @@
 namespace App\Http\Livewire;
 
 use App\Models\Event;
-use App\Models\Logo;
-use App\Services\Event\UpdateLogoService;
+
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Session;
 
-class UpdateLogo extends Component
+class UploadLogo extends Component
 {
     use WithFileUploads;
 
@@ -16,19 +16,23 @@ class UpdateLogo extends Component
     public $logo;
 
     protected $rules = [
-        'logo'=>'required|image|mimes:jpg,png,jpeg,gif,svg|max:1024',
+        'logo' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:1024|dimensions:max_width=1024,max_height=1024',
     ];
 
     public function uploadLogo(): void
     {
         $this->validate();
+       
 
-        $logoToShow = $this->event->logo ?? null;
+        $filename = $this->logo->store('/', 'logos');
+       
 
         $this->event->update([
-            'logo' => $this->logo ? $this->logo->store('logos', 'public') : $logoToShow,
+            'logo' => $filename
         ]);
-        session()->flash('success', 'Логотип обновлен');
+
+
+        Session::flash('message', 'Логотип обновлен');
     }
 
 
@@ -38,11 +42,11 @@ class UpdateLogo extends Component
         $this->event->update([
             'logo' => ''
         ]);
-        session()->flash('success', 'Логотип удален');
+        Session::flash('message', 'Логотип удален');
     }
 
     public function render()
     {
-        return view('livewire.update-logo');
+        return view('livewire.upload-logo');
     }
 }

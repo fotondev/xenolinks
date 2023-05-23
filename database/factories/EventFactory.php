@@ -27,6 +27,7 @@ class EventFactory extends Factory
             'size' => rand(1, 6),
             'level' => fake()->word,
             'owner_id' => User::factory()->create()->id,
+            'visible' => 0
         ];
     }
 }

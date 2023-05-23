@@ -20,14 +20,15 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased">
+<body class="bg-gradient-to-b from-gray-100 to-gray-200 text-gray-700">
+    <x-alert />
     <x-banner />
     <div class="min-h-screen">
         @livewire('navigation-menu')
 
         <!-- Page Heading -->
         @if (isset($header))
-            <header class="bg-white shadow">
+            <header class="border-b border-gray-800">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
@@ -43,11 +44,12 @@
     @stack('modals')
 
     @livewireScripts
-    <footer>
-
+    <footer class="border-t border-gray-800">
+        <div class="container mx-auto px-4 py-6">
+            Powered By
+        </div>
     </footer>
 </body>
 
 
 </html>
-

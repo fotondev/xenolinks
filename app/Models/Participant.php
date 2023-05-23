@@ -32,8 +32,8 @@ class Participant extends Model
         return $this->belongsTo(Event::class);
     }
 
-    public function duels(): HasMany
+    public function duels(): BelongsToMany
     {
-        return $this->hasMany(Duel::class);
+        return $this->belongsToMany(Duel::class);
     }
 }

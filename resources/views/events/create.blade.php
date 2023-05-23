@@ -1,11 +1,11 @@
 <x-app-layout>
-    <div class="border-2 border-gray-200 p-6 rounded max-w-lg mx-auto mt-12">
+    <div class="border-2 border-sky-300 p-6 rounded max-w-lg mx-auto mt-12">
         <header class="text-center">
-            <h2 class="text-2xl font-bold uppercase mb-4 text-white">
+            <h2 class="text-2xl font-bold uppercase mb-4 text-sky-500">
                 Создать новый турнир
             </h2>
         </header>
-        <form action="{{route('events.index')}}" method="POST">
+        <form action="{{ route('events.index') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="flex justify-content space-x-10">
 
@@ -45,13 +45,11 @@
                         <div class="flex items-center p-2 border-gray-200 rounded">
                             <input id="level-1" type="radio" value="casual" name="level"
                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                            <x-label for="level-1"
-                                class="w-full py-4 ml-2 text-sm font-medium text-gray-900">
+                            <x-label for="level-1" class="w-full py-4 ml-2 text-sm font-medium text-gray-900">
                                 Любительский</x-label>
                             <input checked id="level-2" type="radio" value="expert" name="level"
                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                            <x-label for="level-2"
-                                class="w-full py-4 ml-2 text-sm font-medium text-gray-900">
+                            <x-label for="level-2" class="w-full py-4 ml-2 text-sm font-medium text-gray-900">
                                 Экспертный</x-label>
                         </div>
                         @error('level')

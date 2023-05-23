@@ -5,27 +5,40 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Participant;
 use Illuminate\Http\Request;
+use App\Services\Event\UpdateLogo;
 use App\Services\Event\CreateEvent;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use App\Services\Event\UpdateGeneralInfo;
 use Illuminate\Validation\ValidationException;
 
 class EventController extends Controller
 {
 
-    public function index()
+    public function index(UpdateGeneralInfo $service)
     {
-        $events = Event::orderBy('created_at')->with('owner:id,name')->get();
+        $events = Event::where('owner_id', Auth::user()->id)
+            ->orderBy('created_at')
+            ->with('owner:id,name')
+            ->get();
+
+        foreach ($events as  $event) {
+            $service->changeStatus($event);
+        }
+
         return view('events.index', [
             'events' => $events
         ]);
     }
 
-    public function show(Event $event)
+    public function show(Event $event, UpdateGeneralInfo $service)
     {
         $checked = Participant::where('event_id', $event->id)
             ->where('is_checked', true)
             ->get();
-            
+
+        $service->changeStatus($event);
+
         return view('events.show', [
             'event' => $event,
             'checked' => $checked
@@ -61,6 +74,10 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
+
+        if (!Gate::allows('event-update', $event)) {
+            abort(403);
+        }
         return view('events.edit', [
             'event' => $event
         ]);
@@ -68,7 +85,9 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event, UpdateGeneralInfo $service)
     {
-
+        if (!Gate::allows('event-update', $event)) {
+            abort(403);
+        }
         try {
             $service->execute([
                 'id' => $event->id,
@@ -92,6 +111,10 @@ class EventController extends Controller
 
     public function delete(Event $event)
     {
+
+        if (!Gate::allows('event-update', $event)) {
+            abort(403);
+        }
         $event->delete();
         return to_route('events.index');
     }

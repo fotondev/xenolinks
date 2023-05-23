@@ -13,4 +13,6 @@ enum EventStatus:string
 
     case Launched = 'launched';
 
+    case Finished = 'finished';
+
 }

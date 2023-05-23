@@ -14,6 +14,7 @@ class Duel extends Model
     use HasFactory;
 
     protected $fillable = [
+        'event_id',
         'round_id',
         'number',
         'p1_score',

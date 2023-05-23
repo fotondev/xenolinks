@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Duel;
 use App\Models\Event;
 use App\Models\Participant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use App\Services\Event\CreateParticipant;
 use App\Services\Event\UpdateParticipant;
-use App\Services\Event\UpdateParticipantScore;
 use Illuminate\Validation\ValidationException;
 
 class ParticipantController extends Controller
@@ -27,6 +26,10 @@ class ParticipantController extends Controller
 
     public function create(Event $event)
     {
+
+        if (!Gate::allows('event-update', $event)) {
+            abort(403);
+        }
         return view('participants.create', [
             'event' => $event
         ]);
@@ -34,25 +37,38 @@ class ParticipantController extends Controller
 
     public function store(Request $request, Event $event, CreateParticipant $service)
     {
-        try {
-            $participant = $service->execute([
-                'name' => $request->name,
-                'email' => $request->email,
-                'user_id' => $request->user_id,
-                'event_id' => $event->id,
-            ]);
-        } catch (ValidationException $e) {
-            return back()
-                ->withInput()
-                ->withErrors($e->validator);
+
+        if (!Gate::allows('event-update', $event)) {
+            abort(403);
         }
-        session()->flash('message', 'Участник добавлен');
-        return redirect()->route('participants.index', $event->id);
+        if ($event->participants->count() < $event->size) {
+            try {
+                $participant = $service->execute([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'user_id' => $request->user_id,
+                    'event_id' => $event->id,
+                ]);
+            } catch (ValidationException $e) {
+                return back()
+                    ->withInput()
+                    ->withErrors($e->validator);
+            }
+            session()->flash('message', 'Участник добавлен');
+            return redirect()->route('participants.index', $event->id);
+        } else {
+            session()->flash('message', 'Турнир заполнен');
+            return redirect()->route('participants.index', $event->id);
+        }
     }
 
 
     public function edit(Event $event, Participant $participant)
     {
+
+        if (!Gate::allows('event-update', $event)) {
+            abort(403);
+        }
         return view('participants.edit', [
             'event' => $event,
             'participant' => $participant
@@ -65,7 +81,11 @@ class ParticipantController extends Controller
         Participant $participant,
         UpdateParticipant $service
     ) {
-        try {
+       
+        if (!Gate::allows('event-update', $event)) {
+            abort(403);
+        }
+        try {   
             $service->execute([
                 'id' => $participant->id,
                 'name' => $request->name,
@@ -82,11 +102,15 @@ class ParticipantController extends Controller
     }
 
 
-   
+
 
 
     public function delete(Event $event, Participant $participant)
     {
+        
+        if (! Gate::allows('event-update', $event)) {
+            abort(403);
+        }
         $participant->delete();
         return to_route('participants.index', $event->id);
     }

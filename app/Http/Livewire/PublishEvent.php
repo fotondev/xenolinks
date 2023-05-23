@@ -10,23 +10,20 @@ class PublishEvent extends Component
 {
 
     public Event $event;
-    public $startDate;
-    public $endDate;
 
-    public function publish(UpdatePublishInfo $service)
+    public function publish()
     {
 
-        $service->execute([
-            'id' => $this->event->id,
-            'start_date' => $this->startDate,
-            'end_date' => $this->endDate,
-            'visible' => '1'
-        ]);
+        $this->event->visible = 1;
+        $this->event->save();
 
         return redirect()->to(route('event.show', $this->event->id));
     }
+
     public function render()
     {
-        return view('livewire.publish-event');
+        return view('livewire.publish-event', [
+            'event' => $this->event
+        ]);
     }
 }

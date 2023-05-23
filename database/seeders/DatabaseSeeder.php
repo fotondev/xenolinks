@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 
         Event::factory(10)->create();
 
-        Participant::factory(8)->create([
+        Participant::factory(4)->create([
             'event_id' => 1
         ]);
     }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('duels', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('round_id');
+            $table->unsignedBigInteger('event_id');
             $table->integer('number')->nullable();
             $table->integer('p1_score')->nullable();
             $table->integer('p2_score')->nullable();
@@ -21,6 +22,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('round_id')->references('id')->on('rounds')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
+            $table->foreign('event_id')->references('id')->on('events')
             ->onDelete('cascade')
             ->onUpdate('cascade');
           

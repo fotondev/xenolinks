@@ -11,9 +11,8 @@ class UnpublishEvent extends Component
 
     public function unpublish()
     {
-        $this->event->update([
-            'visible' => '0'
-        ]);
+        $this->event->visible = '0';
+        $this->event->save();
 
         return redirect()->to(route('event.show', $this->event->id));
     }

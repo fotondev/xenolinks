@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DuelController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\StageController;
 use App\Http\Livewire\CheckInSettings;
@@ -25,22 +26,33 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/login', function () {
     return view('auth.login');
-});
+})->name('login');
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified'
-])->prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+])->group(function () {
+
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('event.show');
+
+});
+
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified'
+])->prefix('organize')->group(function () {
+
+    
 
     Route::get('/events', [EventController::class, 'index'])->name('events.index');
 
-    Route::get('/events/{event}', [EventController::class, 'show'])->name('event.show');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('event.organize');
 
     Route::get('/event/create', [EventController::class, 'create'])->name('event.create');
 
@@ -50,6 +62,8 @@ Route::middleware([
 
     Route::put('/events/{event}', [EventController::class, 'update'])->name('event.update');
 
+    Route::delete('/events/{event}', [EventController::class, 'delete'])->name('event.delete');
+
 
 
 
@@ -57,20 +71,18 @@ Route::middleware([
     Route::get('/events/{event}/participants/create', [ParticipantController::class, 'create'])->name('participant.create');
     Route::post('/events/{event}/participants', [ParticipantController::class, 'store'])->name('participant.store');
     Route::get('/events/{event}/participants/{participant}/edit', [ParticipantController::class, 'edit'])->name('participant.edit');
-    Route::put('/events/{event}/participants', [ParticipantController::class, 'update'])->name('participant.update');
+    Route::put('/events/{event}/participants/{participant}', [ParticipantController::class, 'update'])->name('participant.update');
 
 
-    // Route::get('/events/{event}/stages', [StageController::class, 'index'])->name('stages.index');
-    // Route::get('/events/{event}/stages/create', [StageController::class, 'create'])->name('stage.create');
-    // Route::post('/events/{event}/stages', [StageController::class, 'store'])->name('stage.store');
-    // Route::get('/events/{event}/stages/{stage}/edit', [StageController::class, 'edit'])->name('stage.edit');
-    // Route::put('/events/{event}/stages', [StageController::class, 'update'])->name('stage.update');
 
-    Route::get('/events/{event}/duels', DuelsTable::class)->name('duels');
+    Route::get('/events/{event}/duels', [DuelController::class, 'index'])->name('duels.index');
+
+
+
 
     Route::get('/events/{event}/duels/{duel}', [DuelController::class, 'edit'])->name('duel.edit');
 
-    
+
     Route::put('/events/{event}/duels/{duel}', [DuelController::class, 'update'])->name('duel.update');
 
 
@@ -80,11 +92,4 @@ Route::middleware([
     Route::get('/events/{event}/participants/settings', CheckInSettings::class)->name('participant.settings');
 
     Route::get('/events/{event}/registration/settings', RegistrationSettings::class)->name('registration.settings');
-
-
-    Route::put('/events/{event}/logo', UpdateLogo::class)->name('logo.update');
-
-
-
-
 });

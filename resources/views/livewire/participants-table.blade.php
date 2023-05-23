@@ -46,33 +46,27 @@
                             <x-sort-icon $field="name" :sortField="$sortField" :sortAsc="$sortAsc" />
                         </div>
                     </th>
-                    <th scope="col">
-                        <button class="px-6 py-3">Email</button>
-                    </th>
+                    @can('event-update', $event)
+                        <th scope="col">
+                            <button class="px-6 py-3">Email</button>
+                        </th>
+                        <th scope="col">
+                            <div class="flex items-center"><button wire:click="sortBy('created_at')"
+                                    class="px-6 py-3">Добавлен</button>
+                                <x-sort-icon $field="created_at" :sortField="$sortField" :sortAsc="$sortAsc" />
+                            </div>
+                        </th>
+                    @endcan
+
                     <th scope="col">
                         <div class="flex items-center"><button wire:click="sortBy('created_at')"
-                                class="px-6 py-3">Добавлен</button>
+                                class="px-6 py-3">Статус</button>
                             <x-sort-icon $field="created_at" :sortField="$sortField" :sortAsc="$sortAsc" />
                         </div>
                     </th>
-                    <th scope="col">
-                        <div class="flex items-center"><button wire:click="sortBy('created_at')"
-                                class="px-6 py-3">Статус</button>
-                            <x-sort-icon $field="created_at" :sortField="$sortField" :sortAsc="$sortAsc" />
-                        </div>
-                    </th>
-                    <th scope="col">
-                        {{-- <div class="flex items-center"><button wire:click="sortBy('created_at')"
-                                class="px-6 py-3">Статус</button>
-                            <x-sort-icon $field="created_at" :sortField="$sortField" :sortAsc="$sortAsc" />
-                        </div> --}}
-                    </th>
-                    <th scope="col">
-                        {{-- <div class="flex items-center"><button wire:click="sortBy('created_at')"
-                                class="px-6 py-3">Статус</button>
-                            <x-sort-icon $field="created_at" :sortField="$sortField" :sortAsc="$sortAsc" />
-                        </div> --}}
-                    </th>
+                    @can('event-update', $event)
+                        <th scope="col"></th>
+                    @endcan
                 </tr>
             </thead>
             <tbody>
@@ -88,36 +82,54 @@
                         <td class="px-6 py-4 font-semibold text-gray-900">
                             {{ $participant->name }}
                         </td>
-                        <td class="px-6 py-4 font-semibold text-gray-900">
-                            {{ $participant->email }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ $participant->created_at }}
-                        </td>
-                        <td class="px-6 py-4">
+                        @can('event-update', $event)
+                            <td class="px-6 py-4 font-semibold text-gray-900">
+                                {{ $participant->email }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $participant->created_at }}
+                            </td>
+                        @endcan
+                        <td class="px-10 py-4">
                             @livewire('participant-status', ['participant' => $participant, 'field' => 'is_checked'], key($participant->id))
                         </td>
-                        <td class="px-6 py-4">
-                            <div x-data="{ open: false }">
+                        @if (Auth::user()->can('event-update', $event) && $event->status->value !== 'finished')
+                            <td class="px-6 py-4">
+                                <div>
+                                    <ul class="flex gap-2">
+                                        <li>
+                                            <a href="{{ route('participant.edit', [$event->id, $participant->id]) }}">
+                                                <x-button> Edit</x-button>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <x-button class="bg-red-500" wire:click="delete({{ $participant->id }})">
+                                                Delete</x-button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                {{-- <div x-data="{ open: false }">
+                                    <button @click="open = true">
+                                        <x-settings-icon />
+                                    </button>
+                                    <div class="absolute bottom-0 bg-sky-300" x-show="open" @click.outside="open = false">
+                                        <ul class="flex">
 
-                                <button @click="open = true">
-                                    <x-settings-icon />
-                                </button>
+                                            <li>
+                                                <a href="{{ route('participant.edit', [$event->id, $participant->id]) }}">
+                                                    <x-button> Edit</x-button>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <button wire:click="delete({{ $participant->id }})">Delete</button>
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                                <ul x-show="open" @click.outside="open = false">
-
-                                    <li>
-                                        <a href="{{ route('participant.edit', [$event->id, $participant->id]) }}">
-                                            <x-button> Edit</x-button>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <button wire:click="delete({{ $participant->id }})">Delete</button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
+                                </div> --}}
+                            </td>
                     </tr>
+                @endif
                 @endforeach
             </tbody>
         </table>

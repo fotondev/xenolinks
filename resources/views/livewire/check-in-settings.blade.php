@@ -1,6 +1,6 @@
 <div>
     <div class="text-black-500 border-2 border-gray-200 p-10 rounded max-w-lg mx-auto mt-6 mb-4">
-        <form class="text-black-500" wire:submit.prevent="setCheckIn" method="PUT">
+        <form class="text-black-500" wire:submit.prevent="setCheckIn">
             @csrf
             <div class="mb-1">
                 <x-label for="openReg" class="inline-block text-lg mb-2">

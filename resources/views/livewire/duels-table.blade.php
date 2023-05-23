@@ -1,50 +1,62 @@
 <div>
-    <x-secondary-navigation :event='$event' />
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div>
-            <x-slot name="header">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ __('Сражения') }}
-                </h2>
-            </x-slot>
-        </div>
-        <x-alert />
-        <div>
-            <x-button  wire:click="showPreviousRound">Показать предыдущий</x-button>
-            <div>
-                @if ($currentRound)
-                    <div>Раунд {{ $currentRound->number }}</div>
-                    @if ($currentRound->is_finished)
-                        <x-button wire:click="createNextRound">Next round</x-button>
-                    @else
-                        <x-button wire:loading.remove wire:target="finishRound" wire:click="finishRound">Finish</x-button>
-                    @endif
+    <div>
+        @if ($event->status->value == 'setup')
+            Ожидаем участников
+        @elseif ($event->status->value == 'pending')
+            <x-button wire:loading.remove wire:target="createNextRound" wire:click="createNextRound">
+                Начать турнир
+            </x-button>
+        @elseif($event->status->value == 'launched')
+            <div>Раунд {{$currentRound->number }}</div>
+            @if ($currentRound->number > 1)
+                <x-button wire:click="showPreviousRound">Показать предыдущий</x-button>
+            @endif
+            @if (!$currentRound->is_finished)
+                @if ($currentRound->number == $roundsAmount)
+                    <x-button wire:loading.remove wire:target="finishRound" wire:click="finishEvent">Закончить
+                        турнир</x-button>
                 @else
-                    <div>Раунд 0</div>
-                    <x-button wire:loading.remove wire:target="createNextRound" wire:click="createNextRound">
-                        Начать турнир
-                    </x-button>
+                    <x-button wire:loading.remove wire:target="finishRound" wire:click="finishRound">Закончить
+                        раунд</x-button>
                 @endif
-                <span wire:loading wire:target="finishRound"
-                    class="inline-block px-4 my-3 font-bold text-red-700">Finishing</span>
-                <span wire:loading wire:target="createNextRound"
-                    class="inline-block px-4 my-3 font-bold text-red-700">Starting</span>
+            @elseif($currentRound->number < $event->rounds->count())
+                <x-button wire:click="showNextRound">Показать следующий</x-button>
+            @else
+                <x-button wire:click="createNextRound">Next round</x-button>
+            @endif
+            <div>
+                @foreach ($currentMatches as $i => $duel)
+                    <a href="{{ route('duel.edit', [$event->id, $duel->id]) }}" class="border border-gray-500">
+                        <div>Стол {{ $duel->number }}</div>
+                        @foreach ($duel->participants as $participant)
+                            <div>{{ $participant->name }}</div>
+                        @endforeach
+                    </a>
+                @endforeach
             </div>
-
-        </div>
-
-        <div>
+        @elseif($event->status->value == 'finished')
+            Событие закончено!<br>
+            @if (!count($event->participants))
+                Нет участников
+            @endif
             @foreach ($currentMatches as $i => $duel)
-                <a href="{{ route('duel.edit', [$event->id, $duel->id]) }}" class="border border-gray-500">
-                    <div>Стол {{ $duel->number }}</div>
-                    @foreach ($duel->participants as $participant)
-                        <div>{{ $participant->name }}</div>
-                    @endforeach
-                </a>
+                <ul>
+                    <li>
+                        {{ $i + 1 }}
+                        {{ $duel->number }}
+                        @foreach ($duel->participants as $participant)
+                            <div>{{ $participant->name }}</div>
+                        @endforeach
+                    </li>
+                </ul>
             @endforeach
+        @endif
 
-        </div>
+        <span wire:loading wire:target="finishRound"
+            class="inline-block px-4 my-3 font-bold text-red-700">Finishing</span>
+        <span wire:loading wire:target="createNextRound"
+            class="inline-block px-4 my-3 font-bold text-red-700">Starting</span>
     </div>
-</div>
 
+</div>

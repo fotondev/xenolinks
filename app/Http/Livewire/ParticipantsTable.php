@@ -42,9 +42,10 @@ class ParticipantsTable extends Component
     public function delete(int $id)
     {
         Participant::find($id)->delete();
+        $this->emit('participantDelete');
     }
 
-   
+
     public function render()
     {
         return view('livewire.participants-table',  [
@@ -58,7 +59,6 @@ class ParticipantsTable extends Component
             })
                 ->where('event_id', $this->event->id)
                 ->paginate(5)
-
         ]);
     }
 }

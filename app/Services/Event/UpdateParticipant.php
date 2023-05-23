@@ -21,8 +21,8 @@ class UpdateParticipant extends BaseService
     {
         $this->validate($data);
 
-        $participant = Participant::where('id', $data['id']);
+        $participant = Participant::findOrFail($data['id']);
+
         $participant->update($data);
-       
     }
 }

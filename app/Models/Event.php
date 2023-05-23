@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Event extends Model
 {
@@ -57,6 +58,12 @@ class Event extends Model
     {
         return $this->hasMany(Participant::class);
     }
+
+    public function checkedParticipants(): HasMany
+    {
+        return $this->hasMany(Participant::class)->where('is_checked', 1);
+    }
+
 
     public function rounds(): HasMany
     {

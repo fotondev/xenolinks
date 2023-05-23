@@ -14,7 +14,14 @@ class CreateEvent extends BaseService
         return  [
             'title' => 'required|min:3|max:32',
             'location' => 'required',
-            'size' => 'required|numeric|min:2|max:128',
+            'size' => [
+                'required', 'numeric', 'min:2', 'max:128',
+                function ($attribute, $value, $fail) {
+                    if ($value % 2 != 0) {
+                        $fail('Размер турнира должен быть кратен 2');
+                    }
+                }
+            ],
             'level' => 'required',
         ];
     }
@@ -27,8 +34,4 @@ class CreateEvent extends BaseService
     }
 
 
-    // public function checkConflict(): void
-    // {
-    //     $conflict = 
-    // }
 }
