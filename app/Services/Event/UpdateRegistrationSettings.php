@@ -13,9 +13,8 @@ class UpdateRegistrationSettings extends BaseService
     {
         return  [
             'event_id' => 'required',
-            'openReg' => 'required',
-            'closeReg' => 'required',
-            'enableReg' => 'required'
+            'registration_deadline' => 'nullable|after:now',
+            'registration_fee' => 'nullable|numeric'
         ];
     }
 

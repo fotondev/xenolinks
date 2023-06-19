@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Event;
 
+use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Services\BaseService;
 
@@ -22,8 +23,6 @@ class UpdateGeneralInfo extends BaseService
                     }
                 }
             ],
-            'level' => 'required',
-
             'description' => 'max:1024',
             'start_date' => 'nullable|after:now',
             'end_date' => 'nullable|after:start_date'
@@ -41,12 +40,12 @@ class UpdateGeneralInfo extends BaseService
 
     public function changeStatus($event): void
     {
-        if ($event->status->value != 'launched') {
+        if ($event->status != EventStatus::Launched && $event->status != EventStatus::Finished) {
             if ($event->checkedParticipants->count() == $event->size) {
-                $event->status = 'pending';
+                $event->status = EventStatus::Pending;
                 $event->save();
             } else {
-                $event->status = 'setup';
+                $event->status = EventStatus::Setup;
                 $event->save();
             }
         }

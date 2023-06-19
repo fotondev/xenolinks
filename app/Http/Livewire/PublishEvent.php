@@ -3,8 +3,9 @@
 namespace App\Http\Livewire;
 
 use App\Models\Event;
-use App\Services\Event\UpdatePublishInfo;
 use Livewire\Component;
+use Illuminate\Support\Facades\Session;
+use App\Services\Event\UpdatePublishInfo;
 
 class PublishEvent extends Component
 {
@@ -17,7 +18,10 @@ class PublishEvent extends Component
         $this->event->visible = 1;
         $this->event->save();
 
-        return redirect()->to(route('event.show', $this->event->id));
+
+        Session::flash('message', 'Событие опубликовано');
+        return redirect()->to(route('event.show',$this->event->id));
+      
     }
 
     public function render()

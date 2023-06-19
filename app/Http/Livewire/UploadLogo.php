@@ -14,18 +14,31 @@ class UploadLogo extends Component
 
     public Event $event;
     public $logo;
+    public $logoPreview;
 
-    protected $rules = [
-        'logo' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:1024|dimensions:max_width=1024,max_height=1024',
-    ];
+   
+
+    public function updatedLogo()
+    {
+        $this->validate([
+            'logo' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:1024|dimensions:max_width=1024,max_height=1024',
+        ]);
+        $this->previewLogo();
+    }
+
+    public function previewLogo()
+    {
+        if ($this->logo) {
+          
+            $this->logoPreview = $this->logo->temporaryUrl();
+        }
+    }
 
     public function uploadLogo(): void
     {
-        $this->validate();
-       
 
         $filename = $this->logo->store('/', 'logos');
-       
+
 
         $this->event->update([
             'logo' => $filename
@@ -34,7 +47,6 @@ class UploadLogo extends Component
 
         Session::flash('message', 'Логотип обновлен');
     }
-
 
     public function deleteLogo()
     {

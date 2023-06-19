@@ -20,8 +20,8 @@
     @livewireStyles
 </head>
 
-<body class="bg-gradient-to-b from-gray-100 to-gray-200 text-gray-700">
-    <x-alert />
+<body class="bg-primary text-tertiary">
+    <x-action-message $on=true />
     <x-banner />
     <div class="min-h-screen">
         @livewire('navigation-menu')

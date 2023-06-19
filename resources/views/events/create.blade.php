@@ -1,4 +1,4 @@
-<x-app-layout>
+{{-- <x-app-layout>
     <div class="border-2 border-sky-300 p-6 rounded max-w-lg mx-auto mt-12">
         <header class="text-center">
             <h2 class="text-2xl font-bold uppercase mb-4 text-sky-500">
@@ -74,4 +74,33 @@
             </div>
         </form>
     </div>
+</x-app-layout> --}}
+
+
+<x-app-layout>
+    <x-form action="{{ route('event.store') }}" heading="Создание турнира">
+        <x-form-group label="title" value="Название">
+            <x-input placeholder="Введите название" id="title" name="title" />
+            <x-input-error for="title" />
+        </x-form-group>
+        <x-form-group label="location" value="Место проведения">
+            <x-input placeholder="Введите адрес" id="location" name="location" />
+            <x-input-error for="location" />
+        </x-form-group>
+        <x-form-group label="size" value="Кол-во участников">
+            <x-input type="number" placeholder="" id="size" name="size" />
+            <x-input-error for="size" />
+        </x-form-group>
+       
+        <x-form-group label="description" value="Описание">
+            <textarea type="datetime-local" placeholder="" id="description" name="description" class="w-full"></textarea>
+            <x-input-error for="description" />
+        </x-form-group>
+
+        <div class="flex items-center justify-between">
+            <x-button>
+                Создать
+            </x-button>
+        </div>
+    </x-form>
 </x-app-layout>

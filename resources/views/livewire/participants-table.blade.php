@@ -1,8 +1,12 @@
+@php
+    use App\Enums\EventStatus;
+@endphp
 <div>
     <div x-cloak x-data="{ show: false }">
         <x-button @click="show = !show">
             <span x-text="show ? '{{ __('Скрыть фильтр') }}' : '{{ __('Показать фильтр') }}'"></span>
         </x-button>
+        <button wire:click="seedParicipants">Seed</button>
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 bg-white" x-show="show" x-transition>
             <form action="">
                 <div class="flex flex-col mt-4">
@@ -93,7 +97,7 @@
                         <td class="px-10 py-4">
                             @livewire('participant-status', ['participant' => $participant, 'field' => 'is_checked'], key($participant->id))
                         </td>
-                        @if (Auth::user()->can('event-update', $event) && $event->status->value !== 'finished')
+                        @if (Auth::user()->can('event-update', $event) && $event->editable())
                             <td class="px-6 py-4">
                                 <div>
                                     <ul class="flex gap-2">

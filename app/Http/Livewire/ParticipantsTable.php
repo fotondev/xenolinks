@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Event;
 use Livewire\Component;
 use App\Models\Participant;
+use Database\Factories\ParticipantFactory;
 use Livewire\WithPagination;
 
 class ParticipantsTable extends Component
@@ -30,6 +31,14 @@ class ParticipantsTable extends Component
             $this->sortAsc = true;
         }
         $this->sortField = $field;
+    }
+
+    public function seedParicipants()
+    {
+        Participant::factory($this->event->size)->create([
+            'event_id' => $this->event->id
+        ]);
+        $this->emit('statusChanged');
     }
 
 

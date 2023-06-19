@@ -11,7 +11,6 @@
             </x-input>
             <label for="p2_score">Участник 2 очки:</label>
         </div>
-        <x-button type="submit">Подтвердить</x-button>
-
+        <x-button>Подтвердить</x-button>
     </form>
 </x-app-layout>

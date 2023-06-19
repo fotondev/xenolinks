@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="border-b border-gray-800">
+<nav x-data="{ open: false }" class=" bg-black border-b border-gray-800">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -9,7 +9,7 @@
                     
                 </a>
             </div>
-            <div class="flex  mt-2 md:flex-row lg:flex-row xl:flex-row">        
+            <div class="flex mt-2 md:flex-row lg:flex-row xl:flex-row">        
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
@@ -26,7 +26,7 @@
             </div>
             <div class="flex items-center mt-2 lg:mt-3 ">
                 <div class="">
-                    <x-input class="bg-white border border-transparrent text-sm text-white rounded-full focus-outline-none
+                    <input class="bg-gray-400 text-sm text-white rounded-sm hover:bg-gray-300 focus-outline-none
                     focus:shadow-outline w-64 px-3 pl-8 py-1" placeholder="Поиск..." />
                 </div>
             </div>
@@ -44,7 +44,7 @@
                                 </button>
                             @else
                                 <span class="inline-flex rounded-md">
-                                    <button type="button" class="inline-flex items-center px-3 py-2 border border-sky-500 text-sm leading-4 font-medium rounded-md text-gray-700  hover:text-gray-400 focus:outline-none transition ease-in-out duration-150">
+                                    <button type="button" class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-gray-200  hover:text-gray-400 focus:outline-none transition ease-in-out duration-150">
                                         {{ Auth::user()->name }}
 
                                         <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

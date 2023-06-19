@@ -22,7 +22,7 @@ class CreateEvent extends BaseService
                     }
                 }
             ],
-            'level' => 'required',
+           
         ];
     }
 

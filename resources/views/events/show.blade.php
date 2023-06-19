@@ -1,22 +1,11 @@
+
 <x-app-layout>
     <x-secondary-navigation :event='$event' />
-    <div class=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        @if (Auth::user()->can('event-update', $event) && $event->status->value !== 'finished')
-            @if ($event->visible)
-                <div>
-                    @livewire('unpublish-event', ['event' => $event])
-                </div>
-            @else
-                <div>
-                    @livewire('publish-event', ['event' => $event])
-                </div>
-            @endif
-
-            @livewire('upload-logo', ['event' => $event])
-        @endif
-        <div class="flex flex-col md:flex-row lg:flex-row xl:flex-row bg-white">
+    <div class=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+        <div class="flex flex-col md:flex-row lg:flex-row xl:flex-row bg-secondary rounded-lg">
             <img class="flex items-center h-48 mr-6 md:block lg:block xl:block"
                 src="{{ $event->logo ? asset('logos/' . $event->logo) : asset('/img/no-image.png') }}" alt="" />
+             
             <div class="m-6">
                 <h5 class="text-xl font-semibold tracking-tight text-gray-700">{{ $event->title }}</h5>
                 <div class="flex mt-2 gap-6">
@@ -50,21 +39,31 @@
                     </div>
                 </div>
                 <div class="flex mt-2.5 mb-2 text-sky-500">
-                    <span class="text-gray-500">Статус</span>    
+                    <span class="text-gray-500">Статус</span>
                 </div>
-                <div class="w-16 h-16 border border-gray-400 rounded-full">
-                    <div class="font-semibold text-base flex justify-center items-center h-full">
-                        {{ $event->status }}</div>
+                <div>
+                    <x-event-status :status="$event->status" />
                 </div>
                 <div class="mt-12 mb-5">
                     <span class="text-gray-500">Детали события:</span>
                     <p>{{ $event->description }}</p>
                 </div>
-                @if (Auth::user()->can('event-update', $event) && $event->status->value !== 'finished')
-                    <div class="flex items-center justify-between pt-2">
-                        <x-button-link :href="route('settings.index', $event->id)" :active="request()->routeIs('event.show')">Настройки</x-button-link>
-                    </div>
-                @endif
+                <div class="flex flex-col gap-2">
+                    @if (Auth::user()->can('event-update', $event) && $event->status !== \App\Enums\EventStatus::Finished)
+                        <div class="flex items-center justify-between pt-2">
+                            <x-button-link :href="route('settings.index', $event->id)" :active="request()->routeIs('event.show')">Настройки</x-button-link>
+                        </div>
+                        @if ($event->visible)
+                            <div>
+                                @livewire('unpublish-event', ['event' => $event])
+                            </div>
+                        @else
+                            <div>
+                                @livewire('publish-event', ['event' => $event])
+                            </div>
+                        @endif
+                    @endif
+                </div>
             </div>
         </div>
 </x-app-layout>

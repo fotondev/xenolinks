@@ -17,13 +17,13 @@ return new class extends Migration
             $table->string('title');
             $table->string('location');
             $table->integer('size');
-            $table->tinyText('level');
             $table->string('logo')->nullable();
             $table->text('description')->nullable();
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->boolean('visible')->default('0');
             $table->string('status')->default('setup');
+            $table->boolean('registration_enabled')->default('0');
             $table->integer('current_round')->nullable()->default(0);
 
             $table->timestamps();

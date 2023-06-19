@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Enums\EventStatus;
+use App\Enums\RegistrationStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 
 class Event extends Model
@@ -20,11 +22,10 @@ class Event extends Model
         'location',
         'size',
         'description',
-        'level',
         'logo',
         'start_date',
         'end_date',
-        'enable_reg',
+        'registration_enabled',
         'owner_id',
         'visible',
         'status'
@@ -68,5 +69,10 @@ class Event extends Model
     public function rounds(): HasMany
     {
         return $this->hasMany(Round::class);
+    }
+
+    public function editable()
+    {
+        return ($this->status !== EventStatus::Finished && $this->status !== EventStatus::Launched) ? true : false;
     }
 }

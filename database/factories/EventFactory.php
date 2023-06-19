@@ -18,16 +18,16 @@ class EventFactory extends Factory
      */
     public function definition(): array
     {
+        static $eventNumber = 1;
         return [
-            'title' => fake()->sentence,
+            'title' => "event-" .  $eventNumber++,
             'description' => fake()->paragraph,
             'location' => fake()->city,
             'start_date' =>  Carbon::now()->add(1, 'hour'),
             'end_date' => Carbon::now()->add(5, 'hour'),
             'size' => rand(1, 6),
-            'level' => fake()->word,
             'owner_id' => User::factory()->create()->id,
-            'visible' => 0
+            'visible' => 1
         ];
     }
 }

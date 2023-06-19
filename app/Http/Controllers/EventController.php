@@ -17,7 +17,7 @@ class EventController extends Controller
 
     public function index(UpdateGeneralInfo $service)
     {
-        $events = Event::where('owner_id', Auth::user()->id)
+        $events = Event::where('owner_id', Auth::id())
             ->orderBy('created_at')
             ->with('owner:id,name')
             ->get();
@@ -33,9 +33,7 @@ class EventController extends Controller
 
     public function show(Event $event, UpdateGeneralInfo $service)
     {
-        $checked = Participant::where('event_id', $event->id)
-            ->where('is_checked', true)
-            ->get();
+        $checked = $event->checkedParticipants();
 
         $service->changeStatus($event);
 
@@ -47,7 +45,10 @@ class EventController extends Controller
 
     public function create()
     {
-        return view('events.create');
+        $title = 'ddwdwd';
+        return view('events.create', [
+            'title' => $title
+        ]);
     }
 
     public function store(Request $request, CreateEvent $service)
@@ -57,7 +58,6 @@ class EventController extends Controller
                 'title' => $request->title,
                 'location' => $request->location,
                 'size' => $request->size,
-                'level' => $request->level,
                 'description' => $request->description,
                 'owner_id' => auth()->user()->id
             ]);
@@ -75,7 +75,7 @@ class EventController extends Controller
     public function edit(Event $event)
     {
 
-        if (!Gate::allows('event-update', $event)) {
+        if (Gate::denies('event-update', $event)) {
             abort(403);
         }
         return view('events.edit', [
@@ -85,7 +85,7 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event, UpdateGeneralInfo $service)
     {
-        if (!Gate::allows('event-update', $event)) {
+        if (Gate::denies('event-update', $event)) {
             abort(403);
         }
         try {
@@ -94,7 +94,6 @@ class EventController extends Controller
                 'title' => $request->title,
                 'location' => $request->location,
                 'size' => $request->size,
-                'level' => $request->level,
                 'description' => $request->description,
                 'start_date' => $request->startDate,
                 'end_date' => $request->endDate,
@@ -112,7 +111,7 @@ class EventController extends Controller
     public function delete(Event $event)
     {
 
-        if (!Gate::allows('event-update', $event)) {
+        if (Gate::denies('event-update', $event)) {
             abort(403);
         }
         $event->delete();

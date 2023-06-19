@@ -6,6 +6,7 @@ use App\Models\Duel;
 use App\Models\Event;
 use App\Models\Round;
 use Livewire\Component;
+use App\Enums\EventStatus;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -16,54 +17,53 @@ class DuelsTable extends Component
 
     public Event $event;
 
-    public $currentRound;
+    public ?Round $currentRound;
 
     public $currentMatches;
 
     public $roundsAmount;
 
-    public $participants = [];
+    public $participants;
 
     public function mount()
     {
+      
+        $this->currentRound = $this->event->rounds()->latest()->first();
+   
 
-        $currentRound = Round::where('event_id', $this->event->id)->orderBy('number', 'desc')->first();
-        $this->currentRound = $currentRound;
-        if ($currentRound) {
-            $this->currentMatches = $currentRound->duels()->get();
-        } else {
-            $this->currentMatches =  collect();
-        }
-
-        $participants = $this->event->participants->count();
-
-        $this->participants = $this->event->participants->sortByDesc('current_score');
+        $this->currentMatches = $this->currentRound
+            ? $this->currentRound->duels()->get()
+            : collect();
 
 
-        $this->roundsAmount =  ceil(log($participants) / log(2));
+
+        $this->participants = $this->event->participants
+            ->sortByDesc('current_score');
+
+        $this->roundsAmount = ceil(log($this->participants->count()) / log(2));
     }
 
 
     public function render()
     {
-        return view('livewire.duels-table', [
-            'event' => $this->event,
-            'currentRound' => $this->currentRound,
-            'currentMatches' => $this->currentMatches,
-            'roundsAmount' => $this->roundsAmount,
-            'participants' => $this->participants
-        ]);
+        return view('livewire.duels-table')
+            ->with('event', $this->event)
+            ->with('currentRound', $this->currentRound)
+            ->with('currentMatches', $this->currentMatches)
+            ->with('roundsAmount', $this->roundsAmount)
+            ->with('participants', $this->participants);
     }
 
     public function createNextRound()
     {
         $this->authorize('event-update', $this->event);
-
-        if ($this->currentRound == null) {
-            $this->event->status = 'launched';
+       
+        if ($this->event->status !== EventStatus::Launched) {
+            $this->event->status = EventStatus::Launched;
             $this->event->save();
+           
         }
-
+    
         $participants = $this->event->participants->sortBy('current_score')->values();
 
         $matchesPerRound = $participants->count() / 2;
@@ -93,20 +93,9 @@ class DuelsTable extends Component
             $this->currentMatches->push($duel);
         }
         $this->currentRound = $round;
-       
+
 
         $this->event->refresh();
-    }
-
-
-    public function checkDuelsScore($matches)
-    {
-        foreach ($matches as $match) {
-            if (empty($match['p1_score']) || empty($match['p2_score'])) {
-                return false;
-            }
-        }
-        return true;
     }
 
 
@@ -114,63 +103,64 @@ class DuelsTable extends Component
     {
         $this->authorize('event-update', $this->event);
 
-        if ($this->checkDuelsScore($this->currentMatches)) {
-            foreach ($this->currentMatches as $match) {
-                $this->currentRound->is_finished = 1;
-                $this->currentRound->save();
-                foreach ($match->participants as $key => $participant) {
-                    if ($key == 0) {
-                        $participant->current_score += $match->p1_score;
-                        $participant->save();
-                    } else {
-                        $participant->current_score += $match->p2_score;
-                        $participant->save();
-                    }
-                }
-            }
-        } else {
+        if (!$this->checkDuelsScore($this->currentMatches)) {
             Session::flash('message', 'Все дуэли должны иметь счет!');
+            return;
         }
+
+        $this->currentMatches->each(function ($match) {
+            $match->participants->each(function ($participant, $key) use ($match) {
+                $participant->current_score += $key === 0
+                    ? $match->p1_score
+                    : $match->p2_score;
+                $participant->save();
+            });
+        });
+
+        $this->currentRound->is_finished = 1;
+        $this->currentRound->save();
     }
 
     public function finishEvent()
     {
         $this->authorize('event-update', $this->event);
-        
-        if ($this->checkDuelsScore($this->currentMatches)) {
-            $this->currentRound->is_finished = 1;
-            $this->currentRound->save();
-            $this->event->status = 'finished';
-            $this->event->end_date = now();
-            $this->event->save();
-            foreach ($this->currentMatches as $match) {
-                foreach ($match->participants as $key => $participant) {
-                    if ($key == 0) {
-                        $participant->current_score += $match->p1_score;
-                        $participant->save();
-                    } else {
-                        $participant->current_score += $match->p2_score;
-                        $participant->save();
-                    }
-                }
-            }
-        } else {
-            Session::flash('message', 'Все дуэли должны иметь счет!');
-        }
+
+        $this->currentMatches->each(function ($match) {
+            $match->participants->each(function ($participant, $key) use ($match) {
+                $participant->current_score += $key === 0
+                    ? $match->p1_score
+                    : $match->p2_score;
+                $participant->save();
+            });
+        });
+
+        $this->currentRound->is_finished = 1;
+        $this->currentRound->save();
+
+        $this->event->status = EventStatus::Finished;
+        $this->event->end_date = now();
+        $this->event->save();
     }
 
     public function showPreviousRound()
     {
-        $roundNumber =  $this->currentRound['number'] -= 1;
-        $round = $this->currentRound = Round::where('number', $roundNumber)->first();
-        $this->currentMatches = $round->duels()->get();
+        $roundNumber = $this->currentRound->number - 1;
+        $this->currentRound = $this->event->rounds()->where('number', $roundNumber)->first();
+        $this->currentMatches = $this->currentRound->duels()->get();
     }
 
 
     public function showNextRound()
     {
-        $roundNumber =  $this->currentRound['number'] += 1;
-        $round = $this->currentRound = Round::where('number', $roundNumber)->first();
-        $this->currentMatches = $round->duels()->get();
+        $roundNumber = $this->currentRound->number + 1;
+        $this->currentRound = $this->event->rounds()->where('number', $roundNumber)->first();
+        $this->currentMatches = $this->currentRound->duels()->get();
+    }
+
+    private function checkDuelsScore($matches)
+    {
+        return $matches->every(function ($match) {
+            return !empty($match['p1_score']) && !empty($match['p2_score']);
+        });
     }
 }

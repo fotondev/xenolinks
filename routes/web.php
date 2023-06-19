@@ -1,19 +1,16 @@
 <?php
 
-use App\Http\Controllers\DuelController;
-use App\Http\Controllers\EventController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ParticipantController;
-use App\Http\Controllers\StageController;
-use App\Http\Livewire\CheckInSettings;
-use App\Http\Livewire\DuelsTable;
-use App\Http\Livewire\ParticipantsPage;
-use App\Http\Livewire\RegistrationSettings;
 use App\Http\Livewire\SettingsPage;
-use App\Http\Livewire\ShowBracket;
-use App\Http\Livewire\UpdateLogo;
-use App\Models\Duel;
 use Illuminate\Support\Facades\Route;
+use App\Http\Livewire\CheckInSettings;
+use App\Http\Controllers\DuelController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\EventController;
+
+use App\Http\Controllers\StageController;
+
+use App\Http\Controllers\ParticipantController;
+use App\Http\Livewire\EventRegistrationSettings;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,8 +33,8 @@ Route::middleware([
     'verified'
 ])->group(function () {
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/events/{event}', [EventController::class, 'show'])->name('event.show');
+    Route::get('/', HomeController::class)->name('home');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('event.show')->middleware('recently.viewed');
 
 });
 
@@ -85,11 +82,10 @@ Route::middleware([
 
     Route::put('/events/{event}/duels/{duel}', [DuelController::class, 'update'])->name('duel.update');
 
-
-
     Route::get('/events/{event}/settings', SettingsPage::class)->name('settings.index');
 
     Route::get('/events/{event}/participants/settings', CheckInSettings::class)->name('participant.settings');
 
-    Route::get('/events/{event}/registration/settings', RegistrationSettings::class)->name('registration.settings');
+    Route::get('/events/{event}/registration/settings', EventRegistrationSettings::class)->name('registration.settings');
+    Route::post('/events/{event}/registration', EventRegistrationSettings::class)->name('registration-settings.store');
 });
